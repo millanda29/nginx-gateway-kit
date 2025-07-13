@@ -1,0 +1,39 @@
+version: "3.9"  # Versión de docker-compose, 3.8 es compatible con muchas funciones modernas
+
+services:
+  api-gateway:
+    build: ./nginx   # Construye la imagen usando el Dockerfile en la carpeta nginx
+
+    ports:
+      - "80:80"     # Mapea el puerto 80 local al puerto 80 del contenedor (HTTP)
+
+    # NOTA: No se usa env_file para evitar fallos si el archivo .env no existe.
+    # En cambio, las variables de entorno se pasan directamente para mayor flexibilidad.
+    # Para pasar variables de entorno a través de un archivo .env (solo en desarrollo/local)
+    # Descomenta estas líneas para activar el uso de .env
+    #
+    # Nota: En producción, si el archivo .env no existe, docker-compose fallará.
+    # Por eso en producción recomendamos no usar env_file o usar variables de entorno del sistema.
+    #
+    # env_file:
+    #   - .env
+
+    environment:
+      # Variables para definir las direcciones y puertos de los servicios backend
+      SERVICE1_HOST: ${SERVICE1_HOST}  # Host del primer servicio backend
+      SERVICE1_PORT: ${SERVICE1_PORT}  # Puerto del primer servicio backend
+      SERVICE2_HOST: ${SERVICE2_HOST}  # Host del segundo servicio backend
+      SERVICE2_PORT: ${SERVICE2_PORT}  # Puerto del segundo servicio backend
+      SERVICE3_HOST: ${SERVICE3_HOST}  # Host del tercer servicio backend
+      SERVICE3_PORT: ${SERVICE3_PORT}  # Puerto del tercer servicio backend
+      SERVICE4_HOST: ${SERVICE4_HOST}  # Host del cuarto servicio backend
+      SERVICE4_PORT: ${SERVICE4_PORT}  # Puerto del cuarto servicio backend
+
+# Cómo funcionan estas variables:
+# - Docker Compose las toma desde las variables de entorno del sistema o del entorno donde se ejecuta (shell, CI/CD)
+# - Si alguna variable no está definida, el valor será vacío, así que asegúrate de definirlas antes de correr docker-compose
+#
+# Beneficios de esta configuración:
+# - Evita dependencia de archivos .env que pueden no existir en producción
+# - Facilita integración con pipelines y ambientes variables
+# - Control total sobre las variables desde el entorno (shell export, GitHub Actions secrets, etc)
